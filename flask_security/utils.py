@@ -450,21 +450,6 @@ def use_double_hash(password_hash=None):
 
 
 @contextmanager
-def capture_passwordless_login_requests():
-    login_requests = []
-
-    def _on(app, **data):
-        login_requests.append(data)
-
-    login_instructions_sent.connect(_on)
-
-    try:
-        yield login_requests
-    finally:
-        login_instructions_sent.disconnect(_on)
-
-
-@contextmanager
 def capture_registrations():
     """Testing utility for capturing registrations.
 

@@ -88,14 +88,3 @@ def test_context_processors(client, app):
     email = outbox[0]
     assert 'global' in email.html
     assert 'bar' in email.html
-
-
-@pytest.mark.passwordless()
-@pytest.mark.settings(send_login_template='custom_security/send_login.html')
-def test_passwordless_login_context_processor(app, client):
-    @app.security.send_login_context_processor
-    def send_login():
-        return {'foo': 'bar'}
-
-    response = client.get('/login')
-    assert b'bar' in response.data

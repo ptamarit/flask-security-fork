@@ -38,7 +38,6 @@ _default_field_labels = {
     'retype_password': _('Retype Password'),
     'new_password': _('New Password'),
     'change_password': _('Change Password'),
-    'send_login_link': _('Send Login Link')
 }
 
 
@@ -182,23 +181,6 @@ class ForgotPasswordForm(Form, UserEmailFormMixin):
             return False
         if requires_confirmation(self.user):
             self.email.errors.append(get_message('CONFIRMATION_REQUIRED')[0])
-            return False
-        return True
-
-
-class PasswordlessLoginForm(Form, UserEmailFormMixin):
-    """The passwordless login form"""
-
-    submit = SubmitField(get_form_field_label('send_login_link'))
-
-    def __init__(self, *args, **kwargs):
-        super(PasswordlessLoginForm, self).__init__(*args, **kwargs)
-
-    def validate(self):
-        if not super(PasswordlessLoginForm, self).validate():
-            return False
-        if not self.user.is_active:
-            self.email.errors.append(get_message('DISABLED_ACCOUNT')[0])
             return False
         return True
 

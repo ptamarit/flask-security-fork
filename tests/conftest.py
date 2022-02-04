@@ -50,7 +50,7 @@ def app(request):
     app.config['SECURITY_PASSWORD_SALT'] = 'salty'
 
     for opt in ['changeable', 'recoverable', 'registerable',
-                'trackable', 'passwordless', 'confirmable']:
+                'trackable', 'confirmable']:
         app.config['SECURITY_' + opt.upper()] = opt in request.keywords
 
     pytest_major = int(pytest.__version__.split('.')[0])

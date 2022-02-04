@@ -19,7 +19,6 @@ from .changeable import change_user_password
 from .confirmable import confirm_email_token_status, confirm_user, \
     send_confirmation_instructions
 from .decorators import anonymous_user_required, login_required
-from .passwordless import login_token_status, send_login_instructions
 from .recoverable import reset_password_token_status, \
     send_reset_password_instructions, update_password
 from .registerable import register_user
@@ -137,51 +136,6 @@ def register():
     return _security.render_template(config_value('REGISTER_USER_TEMPLATE'),
                                      register_user_form=form,
                                      **_ctx('register'))
-
-
-def send_login():
-    """View function that sends login instructions for passwordless login"""
-
-    form_class = _security.passwordless_login_form
-
-    if request.is_json:
-        form = form_class(MultiDict(request.get_json()))
-    else:
-        form = form_class()
-
-    if form.validate_on_submit():
-        send_login_instructions(form.user)
-        if not request.is_json:
-            do_flash(*get_message('LOGIN_EMAIL_SENT', email=form.user.email))
-
-    if request.is_json:
-        return _render_json(form)
-
-    return _security.render_template(config_value('SEND_LOGIN_TEMPLATE'),
-                                     send_login_form=form,
-                                     **_ctx('send_login'))
-
-
-@anonymous_user_required
-def token_login(token):
-    """View function that handles passwordless login via a token"""
-
-    expired, invalid, user = login_token_status(token)
-
-    if invalid:
-        do_flash(*get_message('INVALID_LOGIN_TOKEN'))
-    if expired:
-        send_login_instructions(user)
-        do_flash(*get_message('LOGIN_EXPIRED', email=user.email,
-                              within=_security.login_within))
-    if invalid or expired:
-        return redirect(url_for('login'))
-
-    login_user(user)
-    after_this_request(_commit)
-    do_flash(*get_message('PASSWORDLESS_LOGIN_SUCCESSFUL'))
-
-    return redirect(get_post_login_redirect())
 
 
 def send_confirmation():
@@ -347,17 +301,9 @@ def create_blueprint(state, import_name):
 
     bp.route(state.logout_url, endpoint='logout')(logout)
 
-    if state.passwordless:
-        bp.route(state.login_url,
-                 methods=['GET', 'POST'],
-                 endpoint='login')(send_login)
-        bp.route(state.login_url + slash_url_suffix(state.login_url,
-                                                    '<token>'),
-                 endpoint='token_login')(token_login)
-    else:
-        bp.route(state.login_url,
-                 methods=['GET', 'POST'],
-                 endpoint='login')(login)
+    bp.route(state.login_url,
+                methods=['GET', 'POST'],
+                endpoint='login')(login)
 
     if state.registerable:
         bp.route(state.register_url,

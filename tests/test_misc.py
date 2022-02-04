@@ -122,22 +122,6 @@ def test_confirmable_custom_form(app, sqlalchemy_datastore):
     assert b'My Send Confirmation Email Address Field' in response.data
 
 
-def test_passwordless_custom_form(app, sqlalchemy_datastore):
-    app.config['SECURITY_PASSWORDLESS'] = True
-
-    class MyPasswordlessLoginForm(PasswordlessLoginForm):
-        email = StringField('My Passwordless Email Address Field')
-
-    app.security = Security(app,
-                            datastore=sqlalchemy_datastore,
-                            passwordless_login_form=MyPasswordlessLoginForm)
-
-    client = app.test_client()
-
-    response = client.get('/login')
-    assert b'My Passwordless Email Address Field' in response.data
-
-
 def test_addition_identity_attributes(app, sqlalchemy_datastore):
     init_app_with_options(app, sqlalchemy_datastore, **{
         'SECURITY_USER_IDENTITY_ATTRIBUTES': ('email', 'username')

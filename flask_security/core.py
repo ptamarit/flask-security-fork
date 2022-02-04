@@ -27,7 +27,7 @@ from werkzeug.datastructures import ImmutableList
 from werkzeug.local import LocalProxy
 
 from .forms import ChangePasswordForm, ConfirmRegisterForm, \
-    ForgotPasswordForm, LoginForm, PasswordlessLoginForm, RegisterForm, \
+    ForgotPasswordForm, LoginForm, RegisterForm, \
     ResetPasswordForm, SendConfirmationForm
 from .utils import _
 from .utils import config_value as cv
@@ -73,12 +73,10 @@ _default_config = {
     'RESET_PASSWORD_TEMPLATE': 'security/reset_password.html',
     'CHANGE_PASSWORD_TEMPLATE': 'security/change_password.html',
     'SEND_CONFIRMATION_TEMPLATE': 'security/send_confirmation.html',
-    'SEND_LOGIN_TEMPLATE': 'security/send_login.html',
     'CONFIRMABLE': False,
     'REGISTERABLE': False,
     'RECOVERABLE': False,
     'TRACKABLE': False,
-    'PASSWORDLESS': False,
     'CHANGEABLE': False,
     'SEND_REGISTER_EMAIL': True,
     'SEND_PASSWORD_CHANGE_EMAIL': True,
@@ -103,7 +101,6 @@ _default_config = {
     'DEFAULT_HTTP_AUTH_REALM': _('Login Required'),
     'EMAIL_SUBJECT_REGISTER': _('Welcome'),
     'EMAIL_SUBJECT_CONFIRM': _('Please confirm your email'),
-    'EMAIL_SUBJECT_PASSWORDLESS': _('Login instructions'),
     'EMAIL_SUBJECT_PASSWORD_NOTICE': _('Your password has been reset'),
     'EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE': _(
                                     'Your password has been changed'),
@@ -191,8 +188,6 @@ _default_messages = {
         _('Specified user does not exist'), 'error'),
     'INVALID_PASSWORD': (
         _('Invalid password'), 'error'),
-    'PASSWORDLESS_LOGIN_SUCCESSFUL': (
-        _('You have successfully logged in.'), 'success'),
     'FORGOT_PASSWORD': (
         _('Forgot password?'), 'info'),
     'PASSWORD_RESET': (
@@ -217,7 +212,6 @@ _default_forms = {
     'reset_password_form': ResetPasswordForm,
     'change_password_form': ChangePasswordForm,
     'send_confirmation_form': SendConfirmationForm,
-    'passwordless_login_form': PasswordlessLoginForm,
 }
 
 
@@ -446,9 +440,6 @@ class _SecurityState(object):
     def send_confirmation_context_processor(self, fn):
         self._add_ctx_processor('send_confirmation', fn)
 
-    def send_login_context_processor(self, fn):
-        self._add_ctx_processor('send_login', fn)
-
     def mail_context_processor(self, fn):
         self._add_ctx_processor('mail', fn)
 
@@ -477,7 +468,7 @@ class Security(object):
                  login_form=None, confirm_register_form=None,
                  register_form=None, forgot_password_form=None,
                  reset_password_form=None, change_password_form=None,
-                 send_confirmation_form=None, passwordless_login_form=None,
+                 send_confirmation_form=None,
                  anonymous_user=None):
         """Initializes the Flask-Security extension for the specified
         application and datastore implentation.
@@ -505,7 +496,6 @@ class Security(object):
                            reset_password_form=reset_password_form,
                            change_password_form=change_password_form,
                            send_confirmation_form=send_confirmation_form,
-                           passwordless_login_form=passwordless_login_form,
                            anonymous_user=anonymous_user)
 
         if register_blueprint:
