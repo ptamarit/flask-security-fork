@@ -23,11 +23,11 @@ from .passwordless import login_token_status, send_login_instructions
 from .recoverable import reset_password_token_status, \
     send_reset_password_instructions, update_password
 from .registerable import register_user
-from .utils import url_for_security as url_for
 from .utils import config_value, do_flash, get_message, \
     get_post_login_redirect, get_post_logout_redirect, \
     get_post_register_redirect, get_url, login_user, logout_user, \
     slash_url_suffix
+from .utils import url_for_security as url_for
 
 # Convenient references
 _security = LocalProxy(lambda: current_app.extensions['security'])

@@ -11,12 +11,9 @@
 
 import os
 import tempfile
-import time
-from datetime import datetime
 
 import pytest
-from flask import Flask, render_template
-from flask import jsonify
+from flask import Flask, jsonify, render_template
 from flask import request as flask_request
 from flask.json import JSONEncoder as BaseEncoder
 from flask_babelex import Babel
@@ -24,10 +21,10 @@ from flask_mail import Mail
 from speaklater import is_lazy_string
 from utils import Response, populate_data
 
-from flask_security import MongoEngineUserDatastore, PeeweeUserDatastore, \
-    PonyUserDatastore, RoleMixin, Security, SQLAlchemySessionUserDatastore, \
-    SQLAlchemyUserDatastore, UserMixin, auth_required, auth_token_required, \
-    http_auth_required, login_required, roles_accepted, roles_required
+from flask_security import RoleMixin, Security, \
+    SQLAlchemySessionUserDatastore, SQLAlchemyUserDatastore, UserMixin, \
+    auth_required, auth_token_required, http_auth_required, login_required, \
+    roles_accepted, roles_required
 
 
 class JSONEncoder(BaseEncoder):
@@ -147,45 +144,6 @@ def app(request):
     return app
 
 
-@pytest.yield_fixture()
-def mongoengine_datastore(app):
-    from flask_mongoengine import MongoEngine
-
-    db_name = 'flask_security_test_%s' % str(time.time()).replace('.', '_')
-    app.config['MONGODB_SETTINGS'] = {
-        'db': db_name,
-        'host': 'localhost',
-        'port': 27017,
-        'alias': db_name
-    }
-
-    db = MongoEngine(app)
-
-    class Role(db.Document, RoleMixin):
-        name = db.StringField(required=True, unique=True, max_length=80)
-        description = db.StringField(max_length=255)
-        meta = {"db_alias": db_name}
-
-    class User(db.Document, UserMixin):
-        email = db.StringField(unique=True, max_length=255)
-        username = db.StringField(max_length=255)
-        password = db.StringField(required=False, max_length=255)
-        last_login_at = db.DateTimeField()
-        current_login_at = db.DateTimeField()
-        last_login_ip = db.StringField(max_length=100)
-        current_login_ip = db.StringField(max_length=100)
-        login_count = db.IntField()
-        active = db.BooleanField(default=True)
-        confirmed_at = db.DateTimeField()
-        roles = db.ListField(db.ReferenceField(Role), default=[])
-        meta = {"db_alias": db_name}
-
-    yield MongoEngineUserDatastore(db, User, Role)
-
-    with app.app_context():
-        db.connection.drop_database(db_name)
-
-
 @pytest.fixture()
 def sqlalchemy_datastore(request, app, tmpdir):
     from flask_sqlalchemy import SQLAlchemy
@@ -234,12 +192,11 @@ def sqlalchemy_datastore(request, app, tmpdir):
 
 @pytest.fixture()
 def sqlalchemy_session_datastore(request, app, tmpdir):
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import scoped_session, sessionmaker, relationship, \
-        backref
+    from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, \
+        String, create_engine
     from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy import Boolean, DateTime, Column, Integer, String, \
-        ForeignKey
+    from sqlalchemy.orm import backref, relationship, scoped_session, \
+        sessionmaker
 
     f, path = tempfile.mkstemp(
         prefix='flask-security-test-db', suffix='.db', dir=str(tmpdir))
@@ -295,100 +252,6 @@ def sqlalchemy_session_datastore(request, app, tmpdir):
 
 
 @pytest.fixture()
-def peewee_datastore(request, app, tmpdir):
-    from peewee import TextField, DateTimeField, IntegerField, BooleanField, \
-        ForeignKeyField
-    from flask_peewee.db import Database
-
-    f, path = tempfile.mkstemp(
-        prefix='flask-security-test-db', suffix='.db', dir=str(tmpdir))
-
-    app.config['DATABASE'] = {
-        'name': path,
-        'engine': 'peewee.SqliteDatabase'
-    }
-
-    db = Database(app)
-
-    class Role(db.Model, RoleMixin):
-        name = TextField(unique=True)
-        description = TextField(null=True)
-
-    class User(db.Model, UserMixin):
-        email = TextField()
-        username = TextField()
-        password = TextField(null=True)
-        last_login_at = DateTimeField(null=True)
-        current_login_at = DateTimeField(null=True)
-        last_login_ip = TextField(null=True)
-        current_login_ip = TextField(null=True)
-        login_count = IntegerField(null=True)
-        active = BooleanField(default=True)
-        confirmed_at = DateTimeField(null=True)
-
-    class UserRoles(db.Model):
-        """ Peewee does not have built-in many-to-many support, so we have to
-        create this mapping class to link users to roles."""
-        user = ForeignKeyField(User, related_name='roles')
-        role = ForeignKeyField(Role, related_name='users')
-        name = property(lambda self: self.role.name)
-        description = property(lambda self: self.role.description)
-
-    with app.app_context():
-        for Model in (Role, User, UserRoles):
-            Model.create_table()
-
-    def tear_down():
-        db.close_db(None)
-        os.close(f)
-        os.remove(path)
-
-    request.addfinalizer(tear_down)
-
-    return PeeweeUserDatastore(db, User, Role, UserRoles)
-
-
-@pytest.fixture()
-def pony_datastore(request, app, tmpdir):
-    from pony.orm import Database, Optional, Required, Set
-    from pony.orm.core import SetInstance
-
-    SetInstance.append = SetInstance.add
-    db = Database()
-
-    class Role(db.Entity):
-        name = Required(str, unique=True)
-        description = Optional(str, nullable=True)
-        users = Set(lambda: User)
-
-    class User(db.Entity):
-        email = Required(str)
-        username = Optional(str)
-        password = Optional(str, nullable=True)
-        last_login_at = Optional(datetime)
-        current_login_at = Optional(datetime)
-        last_login_ip = Optional(str)
-        current_login_ip = Optional(str)
-        login_count = Optional(int)
-        active = Required(bool, default=True)
-        confirmed_at = Optional(datetime)
-        roles = Set(lambda: Role)
-
-        def has_role(self, name):
-            return name in {r.name for r in self.roles.copy()}
-
-    app.config['DATABASE'] = {
-        'name': ':memory:',
-        'engine': 'pony.SqliteDatabase'
-    }
-
-    db.bind('sqlite', ':memory:', create_db=True)
-    db.generate_mapping(create_tables=True)
-
-    return PonyUserDatastore(db, User, Role)
-
-
-@pytest.fixture()
 def sqlalchemy_app(app, sqlalchemy_datastore):
     def create():
         app.security = Security(app, datastore=sqlalchemy_datastore)
@@ -400,30 +263,6 @@ def sqlalchemy_app(app, sqlalchemy_datastore):
 def sqlalchemy_session_app(app, sqlalchemy_session_datastore):
     def create():
         app.security = Security(app, datastore=sqlalchemy_session_datastore)
-        return app
-    return create
-
-
-@pytest.fixture()
-def peewee_app(app, peewee_datastore):
-    def create():
-        app.security = Security(app, datastore=peewee_datastore)
-        return app
-    return create
-
-
-@pytest.fixture()
-def mongoengine_app(app, mongoengine_datastore):
-    def create():
-        app.security = Security(app, datastore=mongoengine_datastore)
-        return app
-    return create
-
-
-@pytest.fixture()
-def pony_app(app, pony_datastore):
-    def create():
-        app.security = Security(app, datastore=pony_datastore)
         return app
     return create
 
@@ -450,34 +289,21 @@ def get_message(app):
     return fn
 
 
-@pytest.fixture(params=['sqlalchemy', 'sqlalchemy-session', 'mongoengine',
-                        'peewee', 'pony'])
+@pytest.fixture(params=['sqlalchemy', 'sqlalchemy-session'])
 def datastore(
         request,
         sqlalchemy_datastore,
-        sqlalchemy_session_datastore,
-        mongoengine_datastore,
-        peewee_datastore,
-        pony_datastore):
+        sqlalchemy_session_datastore):
     if request.param == 'sqlalchemy':
         rv = sqlalchemy_datastore
     elif request.param == 'sqlalchemy-session':
         rv = sqlalchemy_session_datastore
-    elif request.param == 'mongoengine':
-        rv = mongoengine_datastore
-    elif request.param == 'peewee':
-        rv = peewee_datastore
-    elif request.param == 'pony':
-        rv = pony_datastore
     return rv
 
 
 @pytest.fixture()
 def script_info(app, datastore):
-    try:
-        from flask.cli import ScriptInfo
-    except ImportError:
-        from flask_cli import ScriptInfo
+    from flask.cli import ScriptInfo
 
     def create_app(info):
         app.config.update(**{

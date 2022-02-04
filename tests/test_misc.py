@@ -17,7 +17,7 @@ from flask_security.forms import ChangePasswordForm, ConfirmRegisterForm, \
     RegisterForm, ResetPasswordForm, SendConfirmationForm, StringField, \
     email_required, email_validator, valid_user_email
 from flask_security.utils import capture_reset_password_requests, \
-    encode_string, hash_data, send_mail, string_types, verify_hash
+    encode_string, hash_data, send_mail, verify_hash
 
 
 @pytest.mark.recoverable()
@@ -213,9 +213,9 @@ def test_legacy_hash(in_app_context, data):
 
 def test_hash_data(in_app_context):
     data = hash_data(b'hello')
-    assert isinstance(data, string_types)
+    assert isinstance(data, str)
     data = hash_data(u'hellö')
-    assert isinstance(data, string_types)
+    assert isinstance(data, str)
 
 
 def test_verify_hash(in_app_context):

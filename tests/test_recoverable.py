@@ -16,7 +16,7 @@ from flask_security.core import UserMixin
 from flask_security.forms import LoginForm
 from flask_security.signals import password_reset, \
     reset_password_instructions_sent
-from flask_security.utils import capture_reset_password_requests, string_types
+from flask_security.utils import capture_reset_password_requests
 
 pytestmark = pytest.mark.recoverable()
 
@@ -33,7 +33,7 @@ def test_recoverable_flag(app, client, get_message):
     def on_instructions_sent(app, user, token):
         assert isinstance(app, Flask)
         assert isinstance(user, UserMixin)
-        assert isinstance(token, string_types)
+        assert isinstance(token, str)
         recorded_instructions_sent.append(user)
 
     # Test the reset view

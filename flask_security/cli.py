@@ -9,21 +9,15 @@
     :license: MIT, see LICENSE for more details.
 """
 
-from __future__ import absolute_import, print_function
-
 from functools import wraps
 
 import click
 from flask import current_app
+from flask.cli import with_appcontext
 from werkzeug.datastructures import MultiDict
 from werkzeug.local import LocalProxy
 
 from .utils import hash_password
-
-try:
-    from flask.cli import with_appcontext
-except ImportError:
-    from flask_cli import with_appcontext
 
 _security = LocalProxy(lambda: current_app.extensions['security'])
 _datastore = LocalProxy(lambda: current_app.extensions['security'].datastore)

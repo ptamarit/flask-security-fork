@@ -12,10 +12,10 @@
 import base64
 import hashlib
 import hmac
-import sys
 import warnings
 from contextlib import contextmanager
 from datetime import timedelta
+from urllib.parse import urlsplit
 
 from flask import current_app, flash, render_template, request, session, \
     url_for
@@ -29,12 +29,6 @@ from werkzeug.local import LocalProxy
 from .signals import login_instructions_sent, \
     reset_password_instructions_sent, user_registered
 
-try:
-    from urlparse import urlsplit
-except ImportError:  # pragma: no cover
-    from urllib.parse import urlsplit
-
-
 # Convenient references
 _security = LocalProxy(lambda: current_app.extensions['security'])
 
@@ -45,15 +39,6 @@ _pwd_context = LocalProxy(lambda: _security.pwd_context)
 _hashing_context = LocalProxy(lambda: _security.hashing_context)
 
 localize_callback = LocalProxy(lambda: _security.i18n_domain.gettext)
-
-PY3 = sys.version_info[0] == 3
-
-if PY3:  # pragma: no cover
-    string_types = str,  # pragma: no flakes
-    text_type = str  # pragma: no flakes
-else:  # pragma: no cover
-    string_types = basestring,  # pragma: no flakes
-    text_type = unicode  # pragma: no flakes
 
 
 def _(translate):
@@ -205,7 +190,7 @@ def encode_string(string):
 
     :param string: The string to encode"""
 
-    if isinstance(string, text_type):
+    if isinstance(string, str):
         string = string.encode('utf-8')
     return string
 

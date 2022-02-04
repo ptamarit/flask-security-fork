@@ -16,8 +16,9 @@ from datetime import datetime
 import pkg_resources
 from flask import current_app, render_template
 from flask_babelex import Domain
+from flask_login import AnonymousUserMixin, LoginManager
 from flask_login import UserMixin as BaseUserMixin
-from flask_login import AnonymousUserMixin, LoginManager, current_user
+from flask_login import current_user
 from flask_principal import Identity, Principal, RoleNeed, UserNeed, \
     identity_loaded
 from itsdangerous import URLSafeTimedSerializer
@@ -28,8 +29,9 @@ from werkzeug.local import LocalProxy
 from .forms import ChangePasswordForm, ConfirmRegisterForm, \
     ForgotPasswordForm, LoginForm, PasswordlessLoginForm, RegisterForm, \
     ResetPasswordForm, SendConfirmationForm
+from .utils import _
 from .utils import config_value as cv
-from .utils import _, get_config, hash_data, localize_callback, string_types, \
+from .utils import get_config, hash_data, localize_callback, \
     url_for_security, verify_hash
 from .views import create_blueprint
 
@@ -385,7 +387,7 @@ class UserMixin(BaseUserMixin):
         """Returns `True` if the user identifies with the specified role.
 
         :param role: A role name or `Role` instance"""
-        if isinstance(role, string_types):
+        if isinstance(role, str):
             return role in (role.name for role in self.roles)
         else:
             return role in self.roles
@@ -519,7 +521,7 @@ class Security(object):
         app.extensions['security'] = state
 
         if hasattr(app, 'cli'):
-            from .cli import users, roles
+            from .cli import roles, users
             if state.cli_users_name:
                 app.cli.add_command(users, state.cli_users_name)
             if state.cli_roles_name:

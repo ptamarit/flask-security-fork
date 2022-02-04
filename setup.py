@@ -13,32 +13,24 @@ with io.open('flask_security/__init__.py', 'rt', encoding='utf8') as f:
     version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 
 tests_require = [
-    'Flask-CLI>=0.4.0',
-    'Flask-Mongoengine>=0.7.0',
-    'Flask-Peewee>=0.6.5',
-    'Flask-SQLAlchemy>=2.3',
     'bcrypt>=3.1.0',
-    'check-manifest>=0.25',
-    'coverage>=4.0',
-    'isort>=4.2.2',
+    'check-manifest>=0.42',
+    'coverage>=5.3,<6',
+    'docker-services-cli>=0.3.0',
+    'Flask-SQLAlchemy>=2.3',
     'mock>=1.3.0',
-    'mongoengine>=0.10.0',
     'msgcheck>=2.9',
-    'pony>=0.7.4',
-    'pydocstyle>=1.0.0',
-    'pytest-cache>=1.0',
-    'pytest-cov>=2.4.0',
-    'pytest-flakes>=1.0.1',
-    'pytest-pep8>=1.0.6',
-    'pytest>=3.3.0',
-    'sqlalchemy>=1.1.0',
-    'werkzeug>=0.12.2'
+    'pytest-cov>=2.10.1',
+    'pytest-flask>=1.0.0',
+    'pytest-isort>=1.2.0',
+    'pytest-pycodestyle>=2.2.0',
+    'pytest-pydocstyle>=2.2.0',
+    'pytest>=6,<7',
 ]
 
 extras_require = {
     'docs': [
-        'Flask-Sphinx-Themes>=1.0.1',
-        'Sphinx>=1.4.2',
+        'Sphinx>=4.2.0',
     ],
     'tests': tests_require,
 }
@@ -48,19 +40,16 @@ for reqs in extras_require.values():
     extras_require['all'].extend(reqs)
 
 setup_requires = [
-    'Babel>=1.3',
-    'pytest-runner>=2.6.2',
-    'twine',
-    'wheel'
+    'Babel>=2.8',
 ]
 
 install_requires = [
-    'Flask>=0.12',
-    'Flask-Login>=0.3.0',
+    'Flask>=1.1',
+    'Flask-Login>=0.4.0',
     'Flask-Mail>=0.9.1',
     'Flask-Principal>=0.4.0',
-    'Flask-WTF>=0.13.1',
-    'Flask-BabelEx>=0.9.3',
+    'Flask-WTF>=1.0.0',
+    'Flask-BabelEx>=0.9.4',
     'itsdangerous>=0.24',
     'passlib>=1.7',
 ]
@@ -68,22 +57,21 @@ install_requires = [
 packages = find_packages()
 
 setup(
-    name='Flask-Security-Too',
+    name='Flask-Security-Fork',
     version=version,
     description=__doc__,
     long_description=readme,
     keywords='flask security',
     license='MIT',
-    author='Matt Wright',
+    author='Matt Wright & Chris Wagner',
     author_email='matt@nobien.net',
-    maintainer='Chris Wagner',
-    maintainer_email='jwag.wagner@gmail.com',
-    url='https://github.com/jwag956/flask-security',
+    maintainer='CERN',
+    maintainer_email='info@inveniosoftware',
+    url='https://github.com/inveniosoftware/flask-security-fork',
     packages=packages,
     zip_safe=False,
     include_package_data=True,
     platforms='any',
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
     extras_require=extras_require,
     install_requires=install_requires,
     setup_requires=setup_requires,
@@ -96,14 +84,9 @@ setup(
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        'Development Status :: 4 - Beta',
     ],
 )
