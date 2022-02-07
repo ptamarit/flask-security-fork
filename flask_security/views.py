@@ -9,10 +9,8 @@
     :license: MIT, see LICENSE for more details.
 """
 
-from flask import Blueprint, after_this_request, current_app, jsonify, \
-    redirect, request
+from flask import Blueprint, after_this_request, current_app, redirect, request
 from flask_login import current_user
-from werkzeug.datastructures import MultiDict
 from werkzeug.local import LocalProxy
 
 from .changeable import change_user_password
@@ -34,25 +32,6 @@ _security = LocalProxy(lambda: current_app.extensions['security'])
 _datastore = LocalProxy(lambda: _security.datastore)
 
 
-def _render_json(form, include_user=True, include_auth_token=False):
-    has_errors = len(form.errors) > 0
-
-    if has_errors:
-        code = 400
-        response = dict(errors=form.errors)
-    else:
-        code = 200
-        response = dict()
-        if include_user:
-            response['user'] = form.user.get_security_payload()
-
-        if include_auth_token:
-            token = form.user.get_auth_token()
-            response['user']['authentication_token'] = token
-
-    return jsonify(dict(meta=dict(code=code), response=response)), code
-
-
 def _commit(response=None):
     _datastore.commit()
     return response
@@ -68,20 +47,13 @@ def login():
 
     form_class = _security.login_form
 
-    if request.is_json:
-        form = form_class(MultiDict(request.get_json()))
-    else:
-        form = form_class(request.form)
+    form = form_class(request.form)
 
     if form.validate_on_submit():
-        login_user(form.user, remember=form.remember.data)
+        login_user(form.user)
         after_this_request(_commit)
 
-        if not request.is_json:
-            return redirect(get_post_login_redirect(form.next.data))
-
-    if request.is_json:
-        return _render_json(form, include_auth_token=True)
+        return redirect(get_post_login_redirect(form.next.data))
 
     return _security.render_template(config_value('LOGIN_USER_TEMPLATE'),
                                      login_user_form=form,
@@ -101,17 +73,12 @@ def logout():
 def register():
     """View function which handles a registration request."""
 
-    if _security.confirmable or request.is_json:
+    if _security.confirmable:
         form_class = _security.confirm_register_form
     else:
         form_class = _security.register_form
 
-    if request.is_json:
-        form_data = MultiDict(request.get_json())
-    else:
-        form_data = request.form
-
-    form = form_class(form_data)
+    form = form_class(request.form)
 
     if form.validate_on_submit():
         user = register_user(**form.to_dict())
@@ -128,10 +95,6 @@ def register():
                 redirect_url = get_post_register_redirect()
 
             return redirect(redirect_url)
-        return _render_json(form, include_auth_token=True)
-
-    if request.is_json:
-        return _render_json(form)
 
     return _security.render_template(config_value('REGISTER_USER_TEMPLATE'),
                                      register_user_form=form,
@@ -143,19 +106,12 @@ def send_confirmation():
 
     form_class = _security.send_confirmation_form
 
-    if request.is_json:
-        form = form_class(MultiDict(request.get_json()))
-    else:
-        form = form_class()
+    form = form_class()
 
     if form.validate_on_submit():
         send_confirmation_instructions(form.user)
-        if not request.is_json:
-            do_flash(*get_message('CONFIRMATION_REQUEST',
-                     email=form.user.email))
-
-    if request.is_json:
-        return _render_json(form)
+        do_flash(*get_message('CONFIRMATION_REQUEST',
+                 email=form.user.email))
 
     return _security.render_template(
         config_value('SEND_CONFIRMATION_TEMPLATE'),
@@ -205,19 +161,13 @@ def forgot_password():
 
     form_class = _security.forgot_password_form
 
-    if request.is_json:
-        form = form_class(MultiDict(request.get_json()))
-    else:
-        form = form_class()
+    form = form_class()
 
     if form.validate_on_submit():
         send_reset_password_instructions(form.user)
-        if not request.is_json:
-            do_flash(*get_message('PASSWORD_RESET_REQUEST',
-                     email=form.user.email))
 
-    if request.is_json:
-        return _render_json(form, include_user=False)
+        do_flash(*get_message('PASSWORD_RESET_REQUEST',
+                 email=form.user.email))
 
     return _security.render_template(config_value('FORGOT_PASSWORD_TEMPLATE'),
                                      forgot_password_form=form,
@@ -266,23 +216,15 @@ def change_password():
 
     form_class = _security.change_password_form
 
-    if request.is_json:
-        form = form_class(MultiDict(request.get_json()))
-    else:
-        form = form_class()
+    form = form_class()
 
     if form.validate_on_submit():
         after_this_request(_commit)
         change_user_password(current_user._get_current_object(),
                              form.new_password.data)
-        if not request.is_json:
-            do_flash(*get_message('PASSWORD_CHANGE'))
-            return redirect(get_url(_security.post_change_view) or
-                            get_url(_security.post_login_view))
-
-    if request.is_json:
-        form.user = current_user
-        return _render_json(form)
+        do_flash(*get_message('PASSWORD_CHANGE'))
+        return redirect(get_url(_security.post_change_view) or
+                        get_url(_security.post_login_view))
 
     return _security.render_template(
         config_value('CHANGE_PASSWORD_TEMPLATE'),

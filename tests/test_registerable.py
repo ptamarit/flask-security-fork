@@ -71,28 +71,6 @@ def test_registerable_flag(client, app, get_message):
         'EMAIL_ALREADY_ASSOCIATED',
         email='Dude@lp.com') in response.data
 
-    # Test registering with JSON
-    data = '{ "email": "dude2@lp.com", "password": "password"}'
-    response = client.post(
-        '/register',
-        data=data,
-        headers={
-            'Content-Type': 'application/json'})
-    assert response.headers['content-type'] == 'application/json'
-    assert response.jdata['meta']['code'] == 200
-
-    logout(client)
-
-    # Test registering with invalid JSON
-    data = '{ "email": "bogus", "password": "password"}'
-    response = client.post(
-        '/register',
-        data=data,
-        headers={
-            'Content-Type': 'application/json'})
-    assert response.headers['content-type'] == 'application/json'
-    assert response.jdata['meta']['code'] == 400
-
     logout(client)
 
     # Test ?next param

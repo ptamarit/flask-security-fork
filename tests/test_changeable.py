@@ -93,18 +93,6 @@ def test_recoverable_flag(app, client, get_message):
     }, follow_redirects=True)
     assert get_message('PASSWORD_CHANGE') in response.data
 
-    # Test JSON
-    data = ('{"password": "      newpassword      ", '
-            '"new_password": "newpassword2", '
-            '"new_password_confirm": "newpassword2"}')
-    response = client.post(
-        '/change',
-        data=data,
-        headers={
-            'Content-Type': 'application/json'})
-    assert response.status_code == 200
-    assert response.headers['Content-Type'] == 'application/json'
-
 
 @pytest.mark.settings(change_url='/custom_change')
 def test_custom_change_url(client):

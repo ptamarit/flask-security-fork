@@ -23,8 +23,7 @@ from utils import Response, populate_data
 
 from flask_security import RoleMixin, Security, \
     SQLAlchemySessionUserDatastore, SQLAlchemyUserDatastore, UserMixin, \
-    auth_required, auth_token_required, http_auth_required, login_required, \
-    roles_accepted, roles_required
+    auth_required, login_required, roles_accepted, roles_required
 
 
 class JSONEncoder(BaseEncoder):
@@ -85,23 +84,9 @@ def app(request):
     def post_login():
         return render_template('index.html', content='Post Login')
 
-    @app.route('/http')
-    @http_auth_required
-    def http():
-        return 'HTTP Authentication'
-
-    @app.route('/http_custom_realm')
-    @http_auth_required('My Realm')
-    def http_custom_realm():
-        return render_template('index.html', content='HTTP Authentication')
-
-    @app.route('/token', methods=['GET', 'POST'])
-    @auth_token_required
-    def token():
-        return render_template('index.html', content='Token Authentication')
 
     @app.route('/multi_auth')
-    @auth_required('session', 'token', 'basic')
+    @auth_required('session',)
     def multi_auth():
         return render_template(
             'index.html',
@@ -138,9 +123,6 @@ def app(request):
     def page_1():
         return 'Page 1'
 
-    @app.route('/json', methods=['GET', 'POST'])
-    def echo_json():
-        return jsonify(flask_request.get_json())
     return app
 
 
@@ -182,12 +164,10 @@ def sqlalchemy_datastore(request, app, tmpdir):
     with app.app_context():
         db.create_all()
 
-    def tear_down():
-        os.close(f)
-        os.remove(path)
-    request.addfinalizer(tear_down)
+    yield SQLAlchemyUserDatastore(db, User, Role)
 
-    return SQLAlchemyUserDatastore(db, User, Role)
+    os.close(f)
+    os.remove(path)
 
 
 @pytest.fixture()
@@ -242,13 +222,11 @@ def sqlalchemy_session_datastore(request, app, tmpdir):
     with app.app_context():
         Base.metadata.create_all(bind=engine)
 
-    def tear_down():
-        db_session.close()
-        os.close(f)
-        os.remove(path)
-    request.addfinalizer(tear_down)
+    yield SQLAlchemySessionUserDatastore(db_session, User, Role)
 
-    return SQLAlchemySessionUserDatastore(db_session, User, Role)
+    db_session.close()
+    os.close(f)
+    os.remove(path)
 
 
 @pytest.fixture()

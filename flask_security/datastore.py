@@ -207,13 +207,3 @@ class SQLAlchemySessionUserDatastore(SQLAlchemyUserDatastore,
                                          PretendFlaskSQLAlchemyDb(session),
                                          user_model,
                                          role_model)
-
-    def commit(self):
-        # Old flask-sqlalchemy adds this weird attribute for tracking
-        # to Session. flask-sqlalchemy 2.0 does things more nicely.
-        try:
-            super(SQLAlchemySessionUserDatastore, self).commit()
-        except AttributeError:
-            import sqlalchemy
-            sqlalchemy.orm.Session._model_changes = {}
-            super(SQLAlchemySessionUserDatastore, self).commit()

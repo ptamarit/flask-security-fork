@@ -33,8 +33,6 @@ _default_unauthorized_html = """
     </p>
     """
 
-BasicAuth = namedtuple('BasicAuth', 'username, password')
-
 
 def _get_unauthorized_response(text=None, headers=None):
     text = text or _default_unauthorized_html
@@ -62,92 +60,19 @@ def _get_unauthorized_view():
     abort(403)
 
 
-def _check_token():
-    user = _security.login_manager._request_callback(request)
-
-    if user and user.is_authenticated:
-        app = current_app._get_current_object()
-        _request_ctx_stack.top.user = user
-        identity_changed.send(app, identity=Identity(user.id))
-        return True
-
-    return False
-
-
-def _check_http_auth():
-    auth = request.authorization or BasicAuth(username=None, password=None)
-    if not auth.username:
-        return False
-    user = _security.datastore.get_user(auth.username)
-
-    if user and utils.verify_and_update_password(auth.password, user):
-        _security.datastore.commit()
-        app = current_app._get_current_object()
-        _request_ctx_stack.top.user = user
-        identity_changed.send(app, identity=Identity(user.id))
-        return True
-
-    return False
-
-
-def http_auth_required(realm):
-    """Decorator that protects endpoints using Basic HTTP authentication.
-
-    :param realm: optional realm name"""
-
-    def decorator(fn):
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            if _check_http_auth():
-                return fn(*args, **kwargs)
-            if _security._unauthorized_callback:
-                return _security._unauthorized_callback()
-            else:
-                r = _security.default_http_auth_realm \
-                    if callable(realm) else realm
-                h = {'WWW-Authenticate': 'Basic realm="%s"' % r}
-                return _get_unauthorized_response(headers=h)
-        return wrapper
-
-    if callable(realm):
-        return decorator(realm)
-    return decorator
-
-
-def auth_token_required(fn):
-    """Decorator that protects endpoints using token authentication. The token
-    should be added to the request by the client by using a query string
-    variable with a name equal to the configuration value of
-    `SECURITY_TOKEN_AUTHENTICATION_KEY` or in a request header named that of
-    the configuration value of `SECURITY_TOKEN_AUTHENTICATION_HEADER`
-    """
-
-    @wraps(fn)
-    def decorated(*args, **kwargs):
-        if _check_token():
-            return fn(*args, **kwargs)
-        if _security._unauthorized_callback:
-            return _security._unauthorized_callback()
-        else:
-            return _get_unauthorized_response()
-    return decorated
-
-
 def auth_required(*auth_methods):
     """
     Decorator that protects enpoints through multiple mechanisms
     Example::
 
         @app.route('/dashboard')
-        @auth_required('token', 'session')
+        @auth_required('session')
         def dashboard():
             return 'Dashboard'
 
     :param auth_methods: Specified mechanisms.
     """
     login_mechanisms = {
-        'token': lambda: _check_token(),
-        'basic': lambda: _check_http_auth(),
         'session': lambda: current_user.is_authenticated
     }
 
@@ -160,9 +85,6 @@ def auth_required(*auth_methods):
             for method, mechanism in mechanisms:
                 if mechanism and mechanism():
                     return fn(*args, **kwargs)
-                elif method == 'basic':
-                    r = _security.default_http_auth_realm
-                    h['WWW-Authenticate'] = 'Basic realm="%s"' % r
             if _security._unauthorized_callback:
                 return _security._unauthorized_callback()
             else:

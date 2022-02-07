@@ -54,17 +54,6 @@ def test_confirmable_flag(app, client, sqlalchemy_datastore, get_message):
     response = client.get('/confirm/bogus', follow_redirects=True)
     assert get_message('INVALID_CONFIRMATION_TOKEN') in response.data
 
-    # Test JSON
-    response = client.post(
-        '/confirm',
-        data='{"email": "matt@lp.com"}',
-        headers={
-            'Content-Type': 'application/json'})
-    assert response.status_code == 200
-    assert response.headers['Content-Type'] == 'application/json'
-    assert 'user' in response.jdata['response']
-    assert len(recorded_instructions_sent) == 1
-
     # Test ask for instructions with invalid email
     response = client.post('/confirm', data=dict(email='bogus@bogus.com'))
     assert get_message('USER_DOES_NOT_EXIST') in response.data
@@ -72,7 +61,7 @@ def test_confirmable_flag(app, client, sqlalchemy_datastore, get_message):
     # Test resend instructions
     response = client.post('/confirm', data=dict(email=email))
     assert get_message('CONFIRMATION_REQUEST', email=email) in response.data
-    assert len(recorded_instructions_sent) == 2
+    assert len(recorded_instructions_sent) == 1
 
     # Test confirm
     token = registrations[0]['confirm_token']
@@ -83,7 +72,7 @@ def test_confirmable_flag(app, client, sqlalchemy_datastore, get_message):
     # Test already confirmed
     response = client.get('/confirm/' + token, follow_redirects=True)
     assert get_message('ALREADY_CONFIRMED') in response.data
-    assert len(recorded_instructions_sent) == 2
+    assert len(recorded_instructions_sent) == 1
 
     # Test already confirmed and expired token
     app.config['SECURITY_CONFIRM_EMAIL_WITHIN'] = '-1 days'
@@ -92,7 +81,7 @@ def test_confirmable_flag(app, client, sqlalchemy_datastore, get_message):
         expired_token = generate_confirmation_token(user)
     response = client.get('/confirm/' + expired_token, follow_redirects=True)
     assert get_message('ALREADY_CONFIRMED') in response.data
-    assert len(recorded_instructions_sent) == 2
+    assert len(recorded_instructions_sent) == 1
 
     # Test already confirmed when asking for confirmation instructions
     logout(client)

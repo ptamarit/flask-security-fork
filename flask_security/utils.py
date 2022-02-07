@@ -46,21 +46,15 @@ def _(translate):
     return translate
 
 
-def login_user(user, remember=None):
+def login_user(user):
     """Perform the login routine.
 
     If SECURITY_TRACKABLE is used, make sure you commit changes after this
     request (i.e. ``app.security.datastore.commit()``).
 
     :param user: The user to login
-    :param remember: Flag specifying if the remember cookie should be set.
-                     Defaults to ``False``
     """
-
-    if remember is None:
-        remember = config_value('DEFAULT_REMEMBER_ME')
-
-    if not _login_user(user, remember):  # pragma: no cover
+    if not _login_user(user, False):  # pragma: no cover
         return False
 
     if _security.trackable:

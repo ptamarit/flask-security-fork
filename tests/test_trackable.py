@@ -79,7 +79,7 @@ def test_trackable_using_login_user(app, client):
     authenticate(client, email=e)
     logout(client)
 
-    data = dict(email=e, password="password", remember='y')
+    data = dict(email=e, password="password")
     client.post('/login_custom', data=data,
                 headers={'X-Forwarded-For': '127.0.0.1'})
 

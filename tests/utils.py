@@ -21,20 +21,8 @@ def authenticate(
         password="password",
         endpoint=None,
         **kwargs):
-    data = dict(email=email, password=password, remember='y')
+    data = dict(email=email, password=password)
     return client.post(endpoint or '/login', data=data, **kwargs)
-
-
-def json_authenticate(
-        client,
-        email="matt@lp.com",
-        password="password",
-        endpoint=None):
-    data = '{"email": "%s", "password": "%s"}' % (email, password)
-    return client.post(
-        endpoint or '/login',
-        content_type="application/json",
-        data=data)
 
 
 def logout(client, endpoint=None, **kwargs):
@@ -82,17 +70,8 @@ def populate_data(app, user_count=None):
 
 
 class Response(BaseResponse):  # pragma: no cover
-
-    @property
-    def jdata(self):
-        rv = getattr(self, '_cached_jdata', _missing)
-        if rv is not _missing:
-            return rv
-        try:
-            self._cached_jdata = json.loads(self.data)
-        except ValueError:
-            raise Exception('Invalid JSON response')
-        return self._cached_jdata
+    # TODO: Remove
+    pass
 
 
 def init_app_with_options(app, datastore, **options):

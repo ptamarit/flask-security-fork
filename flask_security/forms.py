@@ -16,11 +16,11 @@ from flask import Markup, current_app, flash, request
 from flask_login import current_user
 from flask_wtf import FlaskForm as BaseForm
 from speaklater import make_lazy_gettext
-from wtforms import BooleanField, Field, HiddenField, PasswordField, \
-    StringField, SubmitField, ValidationError, validators
+from wtforms import Field, HiddenField, PasswordField, StringField, \
+    SubmitField, ValidationError, validators
 
 from .confirmable import requires_confirmation
-from .utils import _, _datastore, config_value, get_message, hash_password, \
+from .utils import _, _datastore, get_message, hash_password, \
     localize_callback, url_for_security, validate_redirect_url, \
     verify_and_update_password
 
@@ -29,7 +29,6 @@ lazy_gettext = make_lazy_gettext(lambda: localize_callback)
 _default_field_labels = {
     'email': _('Email Address'),
     'password': _('Password'),
-    'remember_me': _('Remember Me'),
     'login': _('Login'),
     'register': _('Register'),
     'send_confirmation': _('Resend Confirmation Instructions'),
@@ -192,14 +191,12 @@ class LoginForm(Form, NextFormMixin):
                         validators=[Required(message='EMAIL_NOT_PROVIDED')])
     password = PasswordField(get_form_field_label('password'),
                              validators=[password_required])
-    remember = BooleanField(get_form_field_label('remember_me'))
     submit = SubmitField(get_form_field_label('login'))
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         if not self.next.data:
             self.next.data = request.args.get('next', '')
-        self.remember.default = config_value('DEFAULT_REMEMBER_ME')
         if current_app.extensions['security'].recoverable and \
                 not self.password.description:
             html = Markup(u'<a href="{url}">{message}</a>'.format(

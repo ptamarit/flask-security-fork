@@ -13,9 +13,9 @@ from utils import authenticate, init_app_with_options, populate_data
 
 from flask_security import Security
 from flask_security.forms import ChangePasswordForm, ConfirmRegisterForm, \
-    ForgotPasswordForm, LoginForm, PasswordField, PasswordlessLoginForm, \
-    RegisterForm, ResetPasswordForm, SendConfirmationForm, StringField, \
-    email_required, email_validator, valid_user_email
+    ForgotPasswordForm, LoginForm, PasswordField, RegisterForm, \
+    ResetPasswordForm, SendConfirmationForm, StringField, email_required, \
+    email_validator, valid_user_email
 from flask_security.utils import capture_reset_password_requests, \
     encode_string, hash_data, send_mail, verify_hash
 

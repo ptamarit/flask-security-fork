@@ -82,15 +82,6 @@ def test_recoverable_flag(app, client, get_message):
 
     logout(client)
 
-    # Test submitting JSON
-    response = client.post('/reset', data='{"email": "joe@lp.com"}', headers={
-        'Content-Type': 'application/json'
-    })
-    assert response.headers['Content-Type'] == 'application/json'
-    assert 'user' not in response.jdata['response']
-
-    logout(client)
-
     # Test invalid email
     response = client.post(
         '/reset',

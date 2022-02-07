@@ -96,8 +96,6 @@ _default_config = {
     'RESET_SALT': 'reset-salt',
     'LOGIN_SALT': 'login-salt',
     'CHANGE_SALT': 'change-salt',
-    'REMEMBER_SALT': 'remember-salt',
-    'DEFAULT_REMEMBER_ME': False,
     'DEFAULT_HTTP_AUTH_REALM': _('Login Required'),
     'EMAIL_SUBJECT_REGISTER': _('Welcome'),
     'EMAIL_SUBJECT_CONFIRM': _('Please confirm your email'),
@@ -219,27 +217,6 @@ def _user_loader(user_id):
     return _security.datastore.find_user(id=user_id)
 
 
-def _request_loader(request):
-    header_key = _security.token_authentication_header
-    args_key = _security.token_authentication_key
-    header_token = request.headers.get(header_key, None)
-    token = request.args.get(args_key, header_token)
-    if request.is_json:
-        data = request.get_json(silent=True) or {}
-        if isinstance(data, dict):
-            token = data.get(args_key, token)
-
-    try:
-        data = _security.remember_token_serializer.loads(
-            token, max_age=_security.token_max_age)
-        user = _security.datastore.find_user(id=data[0])
-        if user and verify_hash(data[1], user.password):
-            return user
-    except:
-        pass
-    return _security.login_manager.anonymous_user()
-
-
 def _identity_loader():
     if not isinstance(current_user._get_current_object(), AnonymousUserMixin):
         identity = Identity(current_user.id)
@@ -262,7 +239,6 @@ def _get_login_manager(app, anonymous_user):
     lm.localize_callback = localize_callback
     lm.login_view = '%s.login' % cv('BLUEPRINT_NAME', app=app)
     lm.user_loader(_user_loader)
-    lm.request_loader(_request_loader)
 
     if cv('FLASH_MESSAGES', app=app):
         lm.login_message, lm.login_message_category = cv('MSG_LOGIN', app=app)
@@ -330,7 +306,6 @@ def _get_state(app, datastore, anonymous_user=None, **kwargs):
         pwd_context=_get_pwd_context(app),
         hashing_context=_get_hashing_context(app),
         i18n_domain=_get_i18n_domain(app),
-        remember_token_serializer=_get_serializer(app, 'remember'),
         login_serializer=_get_serializer(app, 'login'),
         reset_serializer=_get_serializer(app, 'reset'),
         confirm_serializer=_get_serializer(app, 'confirm'),
@@ -372,11 +347,6 @@ class UserMixin(BaseUserMixin):
         """Returns `True` if the user is active."""
         return self.active
 
-    def get_auth_token(self):
-        """Returns the user's authentication token."""
-        data = [str(self.id), hash_data(self.password)]
-        return _security.remember_token_serializer.dumps(data)
-
     def has_role(self, role):
         """Returns `True` if the user identifies with the specified role.
 
@@ -385,10 +355,6 @@ class UserMixin(BaseUserMixin):
             return role in (role.name for role in self.roles)
         else:
             return role in self.roles
-
-    def get_security_payload(self):
-        """Serialize user object as response payload."""
-        return {'id': str(self.id)}
 
 
 class AnonymousUser(AnonymousUserMixin):
