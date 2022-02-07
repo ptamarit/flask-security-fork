@@ -1,7 +1,16 @@
-Flask-Security Changelog
-========================
+Flask-Security-Fork Changelog
+=============================
 
-Here you can see the full list of changes between each Flask-Security release.
+Here you can see the full list of changes between each Flask-Security-Fork release.
+
+Version 3.1.0
+-------------
+
+- Removed token and baisc authentication.
+- Removed MongoDB, PonyORM, Peewee support.
+- Removed remember me support.
+- Removed JSON/AJAX support.
+- Removed passwordless login.
 
 Version 3.0.2
 -------------

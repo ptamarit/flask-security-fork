@@ -1,22 +1,24 @@
-Flask-Security
-==============
+Flask-Security-Fork
+===================
 
-Flask-Security allows you to quickly add common security mechanisms to your
-Flask application. They include:
+.. warning::
 
-1. Session based authentication
-2. Role management
-3. Password hashing
-4. Basic HTTP authentication
-5. Token based authentication
-6. Token based account activation (optional)
-7. Token based password recovery / resetting (optional)
-8. User registration (optional)
-9. Login tracking (optional)
-10. JSON/Ajax Support
+    Please do not use this fork. Use `Flask-Security-Too instead <https://flask-security-too.readthedocs.io/en/stable/>`_.
 
-Many of these features are made possible by integrating various Flask extensions
-and libraries. They include:
+This is a fork is used exclusively for Invenio Framework. The fork has been
+considerably slimmed down removing unused features to lower the  attack
+surface. In addition, Invenio Framework delegates most authentication to
+identity providers and thus do not need advanced features such as multi factor
+authentication which was added in Flask-Security-Too.
+
+The following features have been **removed** from the original Flask-Security:
+
+- Basic HTTP authentication
+- Token based authentication
+- JSON/Ajax Support
+- MongoDB, PonyORM and Peewee support.
+
+Flask-Security-Fork uses the following other libraries:
 
 1. `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_
 2. `Flask-Mail <http://packages.python.org/Flask-Mail/>`_
@@ -24,15 +26,5 @@ and libraries. They include:
 4. `Flask-WTF <http://packages.python.org/Flask-WTF/>`_
 5. `itsdangerous <http://packages.python.org/itsdangerous/>`_
 6. `passlib <http://packages.python.org/passlib/>`_
-
-Additionally, it assumes you'll be using a common library for your database
-connections and model definitions. Flask-Security supports the following Flask
-extensions out of the box for data persistence:
-
-1. `Flask-SQLAlchemy <http://pypi.python.org/pypi/flask-sqlalchemy/>`_
-2. `Flask-MongoEngine <http://pypi.python.org/pypi/flask-mongoengine/>`_
-3. `Flask-Peewee <http://pypi.python.org/pypi/flask-peewee/>`_
-4. `PonyORM <http://pypi.python.org/pypi/pony/>`_
-
 
 .. include:: contents.rst.inc

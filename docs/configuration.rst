@@ -21,7 +21,7 @@ Core
 ``SECURITY_URL_PREFIX``                  Specifies the URL prefix for the
                                          Flask-Security blueprint. Defaults to
                                          ``None``.
-``SECURITY_SUBDOMAIN``                   Specifies the subdomain for the 
+``SECURITY_SUBDOMAIN``                   Specifies the subdomain for the
                                          Flask-Security blueprint. Defaults to
                                          ``None``.
 ``SECURITY_FLASH_MESSAGES``              Specifies whether or not to flash
@@ -195,15 +195,9 @@ Feature Flags
 ``SECURITY_TRACKABLE``    Specifies if Flask-Security should track basic user
                           login statistics. If set to ``True``, ensure your
                           models have the required fields/attributes
-                          and make sure to commit changes after calling 
-                          ``login_user``. Be sure to use `ProxyFix <http://flask.pocoo.org/docs/0.10/deploying/wsgi-standalone/#proxy-setups>`_ if you are using a proxy. 
+                          and make sure to commit changes after calling
+                          ``login_user``. Be sure to use `ProxyFix <http://flask.pocoo.org/docs/0.10/deploying/wsgi-standalone/#proxy-setups>`_ if you are using a proxy.
                           Defaults to ``False``
-``SECURITY_PASSWORDLESS`` Specifies if Flask-Security should enable the
-                          passwordless login feature. If set to ``True``, users
-                          are not required to enter a password to login but are
-                          sent an email with a login link. This feature is
-                          experimental and should be used with caution. Defaults
-                          to ``False``.
 ``SECURITY_CHANGEABLE``   Specifies if Flask-Security should enable the
                           change password endpoint. The URL for this endpoint is
                           specified by the ``SECURITY_CHANGE_URL`` configuration
@@ -300,15 +294,6 @@ Miscellaneous
 ``SECURITY_LOGIN_SALT``                       Specifies the salt value when
                                               generating login links/tokens.
                                               Defaults to ``login-salt``.
-``SECURITY_REMEMBER_SALT``                    Specifies the salt value when
-                                              generating remember tokens.
-                                              Remember tokens are used instead
-                                              of user ID's as it is more
-                                              secure. Defaults to
-                                              ``remember-salt``.
-``SECURITY_DEFAULT_REMEMBER_ME``              Specifies the default "remember
-                                              me" value used when logging in
-                                              a user. Defaults to ``False``.
 ``SECURITY_DATETIME_FACTORY``                 Specifies the default datetime
                                               factory. Defaults to
                                               ``datetime.datetime.utcnow``.
@@ -341,7 +326,6 @@ The default messages and error levels can be found in ``core.py``.
 * ``SECURITY_MSG_LOGIN``
 * ``SECURITY_MSG_LOGIN_EMAIL_SENT``
 * ``SECURITY_MSG_LOGIN_EXPIRED``
-* ``SECURITY_MSG_PASSWORDLESS_LOGIN_SUCCESSFUL``
 * ``SECURITY_MSG_PASSWORD_CHANGE``
 * ``SECURITY_MSG_PASSWORD_INVALID_LENGTH``
 * ``SECURITY_MSG_PASSWORD_IS_THE_SAME``

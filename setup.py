@@ -16,7 +16,8 @@ tests_require = [
     'bcrypt>=3.1.0',
     'check-manifest>=0.42',
     'coverage>=5.3,<6',
-    'Flask-SQLAlchemy>=2.3',
+    'Flask-Sphinx-Themes>=1.0.2',
+    'Flask-SQLAlchemy>=2.5.1',
     'mock>=1.3.0',
     'msgcheck>=2.9',
     'pytest-cov>=2.10.1',
@@ -43,13 +44,14 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask>=1.1',
+    'email-validator>=1.0.5',
+    'Flask-BabelEx>=0.9.4',
     'Flask-Login>=0.4.0',
     'Flask-Mail>=0.9.1',
     'Flask-Principal>=0.4.0',
     'Flask-WTF>=1.0.0',
-    'Flask-BabelEx>=0.9.4',
-    'itsdangerous>=0.24',
+    'Flask>=2.0',
+    'itsdangerous>=2.0',
     'passlib>=1.7',
 ]
 

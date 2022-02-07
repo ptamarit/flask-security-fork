@@ -42,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Flask-Security'
-copyright = u'2012-2019, Matt Wright'
+project = u'Flask-Security-Fork'
+copyright = u'2012-2019, Matt Wright, 2022 CERN'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -100,7 +100,7 @@ html_theme = 'flask'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'github_fork': 'jwag956/flask-security',
+    'github_fork': 'inveniosoftware/flask-security-fork',
     # 'index_logo': False
     'touch_icon': 'touch-icon.png',
     'index_logo': 'logo-full.png'
@@ -176,7 +176,7 @@ html_sidebars = {
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Flask-Securitydoc'
+htmlhelp_basename = 'Flask-SecurityForkdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------
@@ -196,7 +196,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ('index', 'Flask-Security.tex', u'Flask-Security Documentation',
+    ('index', 'Flask-Security-Fork.tex', u'Flask-Security-Fork Documentation',
      u'Matt Wright', 'manual'),
 ]
 

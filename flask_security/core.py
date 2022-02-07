@@ -27,12 +27,11 @@ from werkzeug.datastructures import ImmutableList
 from werkzeug.local import LocalProxy
 
 from .forms import ChangePasswordForm, ConfirmRegisterForm, \
-    ForgotPasswordForm, LoginForm, RegisterForm, \
-    ResetPasswordForm, SendConfirmationForm
+    ForgotPasswordForm, LoginForm, RegisterForm, ResetPasswordForm, \
+    SendConfirmationForm
 from .utils import _
 from .utils import config_value as cv
-from .utils import get_config, hash_data, localize_callback, \
-    url_for_security, verify_hash
+from .utils import get_config, localize_callback, url_for_security
 from .views import create_blueprint
 
 # Convenient references

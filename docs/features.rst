@@ -38,30 +38,6 @@ addition to the algorithm chosen. Bear in mind passlib does not assume which
 algorithm you will choose and may require additional libraries to be installed.
 
 
-Basic HTTP Authentication
--------------------------
-
-Basic HTTP authentication is achievable using a simple view method decorator.
-This feature expects the incoming authentication information to identify a user
-in the system. This means that the username must be equal to their email address.
-
-
-Token Authentication
---------------------
-
-Token based authentication is enabled by retrieving the user auth token by
-performing an HTTP POST with the authentication details as JSON data against the
-authentication endpoint. A successful call to this endpoint will return the
-user's ID and their authentication token. This token can be used in subsequent
-requests to protected resources. The auth token is supplied in the request
-through an HTTP header or query string parameter. By default the HTTP header
-name is `Authentication-Token` and the default query string parameter name is
-`auth_token`. Authentication tokens are generated using the user's password.
-Thus if the user changes his or her password their existing authentication token
-will become invalid. A new token will need to be retrieved using the user's new
-password.
-
-
 Email Confirmation
 ------------------
 
@@ -103,21 +79,6 @@ statistics. They include:
 * Last login IP address
 * Current login IP address
 * Total login count
-
-
-JSON/Ajax Support
------------------
-
-Flask-Security supports JSON/Ajax requests where appropriate. Just remember that
-all endpoints require a CSRF token just like HTML views. More specifically
-JSON is supported for the following operations:
-
-* Login requests
-* Registration requests
-* Change password requests
-* Confirmation requests
-* Forgot password requests
-* Passwordless login requests
 
 
 Command Line Interface

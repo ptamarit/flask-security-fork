@@ -19,10 +19,6 @@ Protecting Views
 
 .. autofunction:: flask_security.decorators.roles_accepted
 
-.. autofunction:: flask_security.decorators.http_auth_required
-
-.. autofunction:: flask_security.decorators.auth_token_required
-
 
 User Object Helpers
 -------------------
@@ -45,17 +41,6 @@ Datastores
     :members:
     :inherited-members:
 
-.. autoclass:: flask_security.datastore.MongoEngineUserDatastore
-    :members:
-    :inherited-members:
-
-.. autoclass:: flask_security.datastore.PeeweeUserDatastore
-    :members:
-    :inherited-members:
-
-.. autoclass:: flask_security.datastore.PonyUserDatastore
-    :members:
-    :inherited-members:
 
 Utils
 -----
@@ -78,8 +63,6 @@ Utils
 .. autofunction:: flask_security.utils.get_within_delta
 
 .. autofunction:: flask_security.utils.send_mail
-
-.. autofunction:: flask_security.utils.get_token_status
 
 Signals
 -------
