@@ -16,7 +16,6 @@ tests_require = [
     'bcrypt>=3.1.0',
     'check-manifest>=0.42',
     'coverage>=5.3,<6',
-    'docker-services-cli>=0.3.0',
     'Flask-SQLAlchemy>=2.3',
     'mock>=1.3.0',
     'msgcheck>=2.9',
