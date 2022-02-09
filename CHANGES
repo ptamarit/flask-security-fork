@@ -14,6 +14,7 @@ Released February 9th 2022
 - Removed remember me support.
 - Removed JSON/AJAX support.
 - Removed passwordless login.
+- Added support for single hashing only specific algorithms.
 
 Version 3.0.2
 -------------
