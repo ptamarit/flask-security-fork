@@ -1,5 +1,5 @@
-Flask-Security-Fork
-===================
+Flask-Security-Invenio
+======================
 
 .. warning::
 
@@ -18,7 +18,7 @@ The following features have been **removed** from the original Flask-Security:
 - JSON/Ajax Support
 - MongoDB, PonyORM and Peewee support.
 
-Flask-Security-Fork uses the following other libraries:
+Flask-Security-Invenio uses the following other libraries:
 
 1. `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_
 2. `Flask-Mail <http://packages.python.org/Flask-Mail/>`_

@@ -3,8 +3,9 @@
 #
 # Copyright (C) 2022 CERN.
 #
-# Flask-Security-Fork is free software; you can redistribute it and/or modify
-# it under the terms of the MIT License; see LICENSE file for more details.
+# Flask-Security-Invenio is free software; you can redistribute it and/or
+# modify it under the terms of the MIT License; see LICENSE file for more
+# details.
 
 # Quit on errors
 set -o errexit

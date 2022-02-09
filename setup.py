@@ -58,17 +58,17 @@ install_requires = [
 packages = find_packages()
 
 setup(
-    name='Flask-Security-Fork',
+    name='Flask-Security-Invenio',
     version=version,
     description=__doc__,
     long_description=readme,
     keywords='flask security',
     license='MIT',
-    author='Matt Wright & Chris Wagner',
-    author_email='matt@nobien.net',
+    author='CERN',
+    author_email='info@inveniosoftware.org',
     maintainer='CERN',
     maintainer_email='info@inveniosoftware',
-    url='https://github.com/inveniosoftware/flask-security-fork',
+    url='https://github.com/inveniosoftware/flask-security-invenio',
     packages=packages,
     zip_safe=False,
     include_package_data=True,
