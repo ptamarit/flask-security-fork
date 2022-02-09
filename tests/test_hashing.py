@@ -59,12 +59,3 @@ def test_missing_hash_salt_option(app, sqlalchemy_datastore):
             'SECURITY_PASSWORD_SALT': None,
             'SECURITY_PASSWORD_SINGLE_HASH': False,
         })
-
-
-def test_single_hash_should_have_no_salt(app, sqlalchemy_datastore):
-    with raises(RuntimeError):
-        init_app_with_options(app, sqlalchemy_datastore, **{
-            'SECURITY_PASSWORD_HASH': 'bcrypt',
-            'SECURITY_PASSWORD_SALT': 'salty',
-            'SECURITY_PASSWORD_SINGLE_HASH': True,
-        })
