@@ -67,7 +67,7 @@ setup(
     author='CERN',
     author_email='info@inveniosoftware.org',
     maintainer='CERN',
-    maintainer_email='info@inveniosoftware',
+    maintainer_email='info@inveniosoftware.org',
     url='https://github.com/inveniosoftware/flask-security-invenio',
     packages=packages,
     zip_safe=False,
