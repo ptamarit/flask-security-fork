@@ -4,6 +4,13 @@ Flask-Security-Invenio Changelog
 Here you can see the full list of changes between each Flask-Security-Invenio
 release.
 
+Version 3.1.2
+-------------
+
+Released March 31st 2022
+
+- Added support for Flask 2.1
+
 Version 3.1.1
 -------------
 
