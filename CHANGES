@@ -4,6 +4,14 @@ Flask-Security-Invenio Changelog
 Here you can see the full list of changes between each Flask-Security-Invenio
 release.
 
+Version 3.3.0
+-------------
+
+Released October 09th 2023
+
+- deprecate `get_user` method on `SQLAlchemyUserDatastore`
+- decouple id and email by adding `get_user_by_email`, `get_user_by_id`
+
 Version 3.2.0
 -------------
 
