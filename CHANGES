@@ -4,6 +4,13 @@ Flask-Security-Invenio Changelog
 Here you can see the full list of changes between each Flask-Security-Invenio
 release.
 
+Version 3.3.2
+-------------
+
+Released October 17th 2023
+
+- Adds support for user impersonation.
+
 Version 3.3.1
 -------------
 
