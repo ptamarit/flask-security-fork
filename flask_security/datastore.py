@@ -79,8 +79,11 @@ class UserDatastore(object):
         """Returns a user matching the specified ID."""
         raise NotImplementedError
 
-    def find_user(self, *args, **kwargs):
-        """Returns a user matching the provided parameters."""
+    def find_user(self, **kwargs):
+        """Returns a user matching the provided parameters.
+        Besides keyword arguments used to filter the results,
+        'case_insensitive' can be passed (defaults to False)
+        """
         raise NotImplementedError
 
     def find_role(self, *args, **kwargs):
@@ -208,8 +211,22 @@ class SQLAlchemyUserDatastore(SQLAlchemyDatastore, UserDatastore):
     def get_user_by_id(self, identifier):
         return self.user_model.query.get(identifier)
 
-    def find_user(self, **kwargs):
-        return self.user_model.query.filter_by(**kwargs).first()
+    def find_user(self, case_insensitive=False, **kwargs):
+        from sqlalchemy import func as alchemyFn
+
+        if case_insensitive:
+            # While it is of course possible to pass in multiple keys to filter on
+            # that isn't the normal use case. If caller asks for case_insensitive
+            # AND gives multiple keys - throw an error.
+            if len(kwargs) > 1:
+                raise ValueError("Case insensitive option only supports single key")
+            attr, identifier = kwargs.popitem()
+            subquery = alchemyFn.lower(
+                getattr(self.user_model, attr)
+            ) == alchemyFn.lower(identifier)
+            return self.user_model.query.filter(subquery).first()
+        else:
+            return self.user_model.query.filter_by(**kwargs).first()
 
     def find_role(self, role):
         return self.role_model.query.filter_by(name=role).first()

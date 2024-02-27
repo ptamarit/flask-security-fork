@@ -34,7 +34,7 @@ def test_unimplemented_datastore_methods():
 def test_unimplemented_user_datastore_methods():
     datastore = UserDatastore(None, None)
     with raises(NotImplementedError):
-        datastore.find_user(None)
+        datastore.find_user()
     with raises(NotImplementedError):
         datastore.find_role(None)
     with raises(NotImplementedError):
@@ -101,6 +101,25 @@ def test_get_user(app, datastore):
         # Regression check
         user = datastore.get_user('%lp.com')
         assert user is None
+
+
+def test_find_user(app, datastore):
+    init_app_with_options(app, datastore)
+
+    with app.app_context():
+        user = datastore.find_user(email='matt@lp.com')
+        assert user is not None
+
+        user = datastore.find_user(email='Matt@Lp.com')
+        assert user is None
+
+        user = datastore.find_user(email='Matt@Lp.com', case_insensitive=True)
+        assert user is not None
+
+        with raises(ValueError):
+            datastore.find_user(
+                case_insensitive=True, email='gene@lp.com', security_number=889900
+            )
 
 
 def test_find_role(app, datastore):
