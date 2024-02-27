@@ -4,6 +4,13 @@ Flask-Security-Invenio Changelog
 Here you can see the full list of changes between each Flask-Security-Invenio
 release.
 
+Version 3.4.0
+-------------
+
+Released February 29th 2024
+
+- Add a `case_insensitive` argument to the `find_user` method (backward-compatible with default value `False`)
+
 Version 3.3.3
 -------------
 
