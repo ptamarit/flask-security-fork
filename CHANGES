@@ -4,6 +4,13 @@ Flask-Security-Invenio Changelog
 Here you can see the full list of changes between each Flask-Security-Invenio
 release.
 
+Version 4.2.3
+-------------
+
+Released July 2nd 2026
+
+- fix(i18n): use messages catalog
+
 Version 4.2.2
 -------------
 
